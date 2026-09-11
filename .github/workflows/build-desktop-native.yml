@@ -24,6 +24,10 @@ jobs:
           mkdir -p out package
           sudo chmod -R 777 "$GITHUB_WORKSPACE"
 
+      - name: Patch cld3 protobuf detection
+        run: |
+          python3 Telegram/build/patch_cld3.py
+
       - name: Run Build in centos_env container
         run: |
           docker run --rm \
