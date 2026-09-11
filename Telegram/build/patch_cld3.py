@@ -25,7 +25,9 @@ replacement = '''    find_package(protobuf CONFIG QUIET)
 
 if target in content:
     content = content.replace(target, replacement)
-    content = content.replace('${gen_loc}', '${gen_loc}\n    ${Protobuf_INCLUDE_DIRS}')
+    target_inc = '    ${cld3_src}\n    ${gen_loc}'
+    replacement_inc = '    ${cld3_src}\n    ${gen_loc}\n    ${Protobuf_INCLUDE_DIRS}'
+    content = content.replace(target_inc, replacement_inc)
     with open(cld3_cmake, 'w', encoding='utf-8') as f:
         f.write(content)
     print("Successfully patched cld3 CMakeLists.txt with Protobuf fallback")
