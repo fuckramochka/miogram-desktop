@@ -9,6 +9,7 @@
 #include "ayu/data/entities.h"
 #include "ayu/libs/sqlite/sqlite_orm.h"
 #include "base/unixtime.h"
+#include <QFile>
 
 using namespace sqlite_orm;
 auto storage = make_storage(

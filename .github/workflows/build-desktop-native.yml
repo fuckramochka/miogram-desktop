@@ -19,14 +19,29 @@ jobs:
           submodules: recursive
           fetch-depth: 1
 
+      - name: Prepare workspace permissions
+        run: |
+          mkdir -p out package
+          sudo chmod -R 777 "$GITHUB_WORKSPACE"
+
       - name: Run Build in centos_env container
         run: |
           docker run --rm \
+            -u 0:0 \
+            -e HOME=/root \
             -v "$GITHUB_WORKSPACE:/usr/src/tdesktop" \
             ghcr.io/telegramdesktop/tdesktop/centos_env:latest \
-            /usr/src/tdesktop/Telegram/build/docker/centos_env/build.sh \
-            -D TDESKTOP_API_ID=2040 \
-            -D TDESKTOP_API_HASH=b18441a1ff607e10a989891a5462e627
+            /bin/bash -c "
+              set -e
+              cd /usr/src/tdesktop/Telegram
+              ./configure.sh -D TDESKTOP_API_ID=2040 -D TDESKTOP_API_HASH=b18441a1ff607e10a989891a5462e627
+              cmake --build ../out --config Release
+            "
+
+      - name: Restore permissions
+        if: always()
+        run: |
+          sudo chmod -R 777 "$GITHUB_WORKSPACE" || true
 
       - name: Package Linux Binary
         run: |
@@ -35,8 +50,12 @@ jobs:
             cp out/Release/Telegram package/miogram/miogram
           elif [ -f "out/Release/Miogram" ]; then
             cp out/Release/Miogram package/miogram/miogram
+          elif [ -f "out/Telegram" ]; then
+            cp out/Telegram package/miogram/miogram
+          elif [ -f "out/Miogram" ]; then
+            cp out/Miogram package/miogram/miogram
           else
-            find out/ -type f -executable -exec cp {} package/miogram/ \;
+            find out/ -maxdepth 3 -type f -executable -exec cp {} package/miogram/ \;
           fi
           cd package
           tar -czvf miogram-desktop-linux-x64.tar.gz miogram/
