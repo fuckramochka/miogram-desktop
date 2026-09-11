@@ -33,9 +33,10 @@ jobs:
             ghcr.io/telegramdesktop/tdesktop/centos_env:latest \
             /bin/bash -c "
               set -e
+              dnf -y install protobuf-devel protobuf-compiler || true
               cd /usr/src/tdesktop/Telegram
               ./configure.sh -D TDESKTOP_API_ID=2040 -D TDESKTOP_API_HASH=b18441a1ff607e10a989891a5462e627
-              cmake --build ../out --config Release
+              cmake --build ../out --config Release --parallel 4
             "
 
       - name: Restore permissions
