@@ -12,7 +12,7 @@
 
 using namespace sqlite_orm;
 auto storage = make_storage(
-	"./tdata/ayudata.db",
+	"./tdata/miodata.db",
 	make_table<SchemaVersion>(
 		"SchemaVersion",
 		make_column("id", &SchemaVersion::id, primary_key()),
@@ -211,21 +211,48 @@ namespace AyuDatabase {
 void moveCurrentDatabase() {
 	const auto time = base::unixtime::now();
 
+	if (QFile::exists("./tdata/miodata.db")) {
+		QFile::rename("./tdata/miodata.db", QString("./tdata/miodata_%1.db").arg(time));
+	}
+	if (QFile::exists("./tdata/miodata.db-shm")) {
+		QFile::rename("./tdata/miodata.db-shm", QString("./tdata/miodata_%1.db-shm").arg(time));
+	}
+	if (QFile::exists("./tdata/miodata.db-wal")) {
+		QFile::rename("./tdata/miodata.db-wal", QString("./tdata/miodata_%1.db-wal").arg(time));
+	}
 	if (QFile::exists("./tdata/ayudata.db")) {
 		QFile::rename("./tdata/ayudata.db", QString("./tdata/ayudata_%1.db").arg(time));
 	}
+}
 
-	if (QFile::exists("./tdata/ayudata.db-shm")) {
-		QFile::rename("./tdata/ayudata.db-shm", QString("./tdata/ayudata_%1.db-shm").arg(time));
+void wipeDatabase() {
+	try {
+		deleteAllFilters();
+		deleteAllExclusions();
+	} catch (...) {
 	}
-
-	if (QFile::exists("./tdata/ayudata.db-wal")) {
-		QFile::rename("./tdata/ayudata.db-wal", QString("./tdata/ayudata_%1.db-wal").arg(time));
-	}
+	QFile::remove("./tdata/miodata.db");
+	QFile::remove("./tdata/miodata.db-shm");
+	QFile::remove("./tdata/miodata.db-wal");
+	QFile::remove("./tdata/ayudata.db");
+	QFile::remove("./tdata/ayudata.db-shm");
+	QFile::remove("./tdata/ayudata.db-wal");
+	QFile::remove("./tdata/mio_settings.json");
+	QFile::remove("./tdata/ayu_settings.json");
 }
 
 void initialize() {
 	try {
+		if (!QFile::exists("./tdata/miodata.db") && QFile::exists("./tdata/ayudata.db")) {
+			QFile::rename("./tdata/ayudata.db", "./tdata/miodata.db");
+			if (QFile::exists("./tdata/ayudata.db-shm")) {
+				QFile::rename("./tdata/ayudata.db-shm", "./tdata/miodata.db-shm");
+			}
+			if (QFile::exists("./tdata/ayudata.db-wal")) {
+				QFile::rename("./tdata/ayudata.db-wal", "./tdata/miodata.db-wal");
+			}
+		}
+
 		storage.sync_schema(true);
 
 		runMigrations(storage);

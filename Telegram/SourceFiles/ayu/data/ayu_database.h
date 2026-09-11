@@ -57,5 +57,6 @@ bool hasFilters();
 bool hasPerDialogFilters();
 
 void moveCurrentDatabase();
+void wipeDatabase();
 
 }

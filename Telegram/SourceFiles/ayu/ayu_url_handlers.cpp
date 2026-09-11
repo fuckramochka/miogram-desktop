@@ -233,4 +233,15 @@ bool TryHandleSpotify(const QString &url) {
 	return false;
 }
 
+bool HandleMusorDrop(
+	Window::SessionController *controller,
+	const Match &match,
+	const QVariant &context) {
+	if (!controller) {
+		return false;
+	}
+	controller->showToast(QString("🗑️ Miogram Musor Drop Activated!"), 3000);
+	return true;
+}
+
 }

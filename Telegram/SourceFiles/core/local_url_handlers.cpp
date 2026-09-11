@@ -1847,6 +1847,22 @@ const std::vector<LocalUrlHandler> &LocalUrlHandlers() {
 			AyuUrlHandlers::HandleAyu
 		},
 		{
+			u"^miosettings/?\\?(.+)(#|$)"_q,
+			AyuUrlHandlers::HandleAyuSettings
+		},
+		{
+			u"^miosettings/?$"_q,
+			AyuUrlHandlers::HandleAyuSettings
+		},
+		{
+			u"^mio(/?.+)?(#|$)"_q,
+			AyuUrlHandlers::HandleAyu
+		},
+		{
+			u"^musor_drop/?(.*)$"_q,
+			AyuUrlHandlers::HandleMusorDrop
+		},
+		{
 			u"^(support)|(donate)$"_q,
 			AyuUrlHandlers::HandleSupport
 		},

@@ -29,7 +29,12 @@ using json = nlohmann::json;
 namespace {
 
 std::string getSettingsPath() {
-	return (cWorkingDir() + u"tdata/ayu_settings.json"_q).toStdString();
+	const auto mioPath = cWorkingDir() + u"tdata/mio_settings.json"_q;
+	const auto ayuPath = cWorkingDir() + u"tdata/ayu_settings.json"_q;
+	if (!QFile::exists(mioPath) && QFile::exists(ayuPath)) {
+		QFile::rename(ayuPath, mioPath);
+	}
+	return mioPath.toStdString();
 }
 
 void repaintApp() {

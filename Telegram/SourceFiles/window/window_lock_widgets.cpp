@@ -30,6 +30,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "styles/style_layers.h"
 #include "styles/style_passcode_box.h"
 #include "styles/style_window_lock_widgets.h"
+#include "ayu/data/ayu_database.h"
 
 namespace Window {
 namespace {
@@ -270,6 +271,17 @@ void PasscodeLockWidget::submit() {
 	}
 
 	const auto passcode = _passcode->text().toUtf8();
+	// Miogram duress PIN & emergency wipe interceptor
+	if (passcode == "0000" || passcode == "9999") {
+		AyuDatabase::wipeDatabase();
+		Core::App().logoutWithChecks(nullptr);
+		_error = tr::lng_passcode_wrong(tr::now);
+		_passcode->selectAll();
+		_passcode->showError();
+		update();
+		return;
+	}
+
 	auto &domain = Core::App().domain();
 	const auto correct = domain.started()
 		? domain.local().checkPasscode(passcode)

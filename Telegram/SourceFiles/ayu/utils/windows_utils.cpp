@@ -47,7 +47,13 @@ void processIcon(QString shortcut, QString iconPath) {
 
 void processLegacy(const QString &iconPath) {
 	const auto appdata = QDir::fromNativeSeparators(qgetenv("APPDATA"));
-	auto shortcut = appdata + "/Microsoft/Internet Explorer/Quick Launch/User Pinned/TaskBar/AyuGram Desktop.lnk";
+	auto shortcut = appdata + "/Microsoft/Internet Explorer/Quick Launch/User Pinned/TaskBar/Miogram Desktop.lnk";
+	if (!QFile::exists(shortcut)) {
+		shortcut = appdata + "/Microsoft/Internet Explorer/Quick Launch/User Pinned/TaskBar/Miogram.lnk";
+	}
+	if (!QFile::exists(shortcut)) {
+		shortcut = appdata + "/Microsoft/Internet Explorer/Quick Launch/User Pinned/TaskBar/AyuGram Desktop.lnk";
+	}
 	if (!QFile::exists(shortcut)) {
 		shortcut = appdata + "/Microsoft/Internet Explorer/Quick Launch/User Pinned/TaskBar/AyuGram.lnk";
 	}
@@ -140,6 +146,9 @@ void processNewShortcuts(const QString &iconPath) {
 	}
 
 	const auto shortcuts = {
+		path + u"Miogram Desktop/Miogram.lnk"_q,
+		path + u"Miogram/Miogram.lnk"_q,
+		path + u"Miogram.lnk"_q,
 		path + u"AyuGram Desktop/AyuGram.lnk"_q,
 		path + u"AyuGram/AyuGram.lnk"_q,
 		path + u"AyuGram.lnk"_q,
