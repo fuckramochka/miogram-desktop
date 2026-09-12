@@ -18,6 +18,7 @@
 #include "ayu/features/miogram/miogram_userbot_performance.h"
 #include "ayu/features/miogram/miogram_vault.h"
 #include "ayu/ui/settings/ayu_builder.h"
+#include "boxes/abstract_box.h"
 #include "settings/settings_builder.h"
 #include "ui/boxes/confirm_box.h"
 #include "window/window_session_controller.h"

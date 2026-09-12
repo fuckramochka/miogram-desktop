@@ -221,13 +221,14 @@ VaultUnlockResult ProfileVault::setup(const QString &pin, const QString &duressP
 	}
 	_salt = MiogramKdf::randomSalt(16);
 	_duressSalt = MiogramKdf::randomSalt(16);
-	const auto pinKey = MiogramKdf::derive(pin.toUtf8(), _salt);
-	const auto dbKey = AesGcm::randomKey(32);
+	auto pinKey = MiogramKdf::derive(pin.toUtf8(), _salt);
+	auto dbKey = AesGcm::randomKey(32);
 	_wrappedDbKey = XorWithKey(dbKey, pinKey);
 	_pinHash = QCryptographicHash::hash(pinKey, QCryptographicHash::Sha256);
 	if (!duressPin.isEmpty()) {
-		const auto duressKey = MiogramKdf::derive(duressPin.toUtf8(), _duressSalt);
+		auto duressKey = MiogramKdf::derive(duressPin.toUtf8(), _duressSalt);
 		_duressHash = QCryptographicHash::hash(duressKey, QCryptographicHash::Sha256);
+		SecureZeroMemory(duressKey);
 	} else {
 		_duressHash = QByteArray();
 	}
@@ -235,7 +236,7 @@ VaultUnlockResult ProfileVault::setup(const QString &pin, const QString &duressP
 	_unlocked = true;
 	_duress = false;
 	_hasVault = true;
-	SecureZeroMemory(const_cast<QByteArray&>(pinKey));
+	SecureZeroMemory(pinKey);
 	SecureZeroMemory(dbKey);
 	saveMeta();
 	return { true, false, QString() };
@@ -245,17 +246,20 @@ VaultUnlockResult ProfileVault::unlock(const QString &pin) {
 	if (!_hasVault) {
 		return { false, false, u"No vault"_q };
 	}
-	const auto pinKey = MiogramKdf::derive(pin.toUtf8(), _salt);
+	auto pinKey = MiogramKdf::derive(pin.toUtf8(), _salt);
 	const auto pinHash = QCryptographicHash::hash(pinKey, QCryptographicHash::Sha256);
 	if (MiogramKdf::timingSafeEqual(pinHash, _pinHash)) {
 		_dbKeyPlain = XorWithKey(_wrappedDbKey, pinKey);
+		SecureZeroMemory(pinKey);
 		_unlocked = true;
 		_duress = false;
 		return { true, false, QString() };
 	}
+	SecureZeroMemory(pinKey);
 	if (!_duressHash.isEmpty()) {
-		const auto duressKey = MiogramKdf::derive(pin.toUtf8(), _duressSalt);
+		auto duressKey = MiogramKdf::derive(pin.toUtf8(), _duressSalt);
 		const auto duressHash = QCryptographicHash::hash(duressKey, QCryptographicHash::Sha256);
+		SecureZeroMemory(duressKey);
 		if (MiogramKdf::timingSafeEqual(duressHash, _duressHash)) {
 			SecureZeroMemory(_dbKeyPlain);
 			_unlocked = true;
@@ -291,8 +295,9 @@ bool ProfileVault::verifyPin(const QString &pin) const {
 	if (!_hasVault) {
 		return false;
 	}
-	const auto pinKey = MiogramKdf::derive(pin.toUtf8(), _salt);
+	auto pinKey = MiogramKdf::derive(pin.toUtf8(), _salt);
 	const auto pinHash = QCryptographicHash::hash(pinKey, QCryptographicHash::Sha256);
+	SecureZeroMemory(pinKey);
 	return MiogramKdf::timingSafeEqual(pinHash, _pinHash);
 }
 
@@ -300,8 +305,9 @@ bool ProfileVault::verifyDuressPin(const QString &pin) const {
 	if (!_hasVault || _duressHash.isEmpty()) {
 		return false;
 	}
-	const auto duressKey = MiogramKdf::derive(pin.toUtf8(), _duressSalt);
+	auto duressKey = MiogramKdf::derive(pin.toUtf8(), _duressSalt);
 	const auto duressHash = QCryptographicHash::hash(duressKey, QCryptographicHash::Sha256);
+	SecureZeroMemory(duressKey);
 	return MiogramKdf::timingSafeEqual(duressHash, _duressHash);
 }
 
@@ -310,11 +316,13 @@ void ProfileVault::changePin(const QString &oldPin, const QString &newPin) {
 	if (!res.success || res.duress) {
 		return;
 	}
-	const auto dbKey = _dbKeyPlain;
+	auto dbKey = _dbKeyPlain;
 	_salt = MiogramKdf::randomSalt(16);
-	const auto pinKey = MiogramKdf::derive(newPin.toUtf8(), _salt);
+	auto pinKey = MiogramKdf::derive(newPin.toUtf8(), _salt);
 	_wrappedDbKey = XorWithKey(dbKey, pinKey);
 	_pinHash = QCryptographicHash::hash(pinKey, QCryptographicHash::Sha256);
+	SecureZeroMemory(pinKey);
+	SecureZeroMemory(dbKey);
 	saveMeta();
 }
 

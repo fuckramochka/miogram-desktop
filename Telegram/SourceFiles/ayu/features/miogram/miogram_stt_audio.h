@@ -29,11 +29,11 @@ public:
 	[[nodiscard]] std::vector<std::vector<float>> logMel(
 		const std::vector<float> &pcmMono,
 		int sampleRate,
-		const MelConfig &config = MelConfig{});
+		const MelConfig &config = MelConfig{}) const;
 	[[nodiscard]] std::vector<std::vector<float>> mfcc(
 		const std::vector<float> &pcmMono,
 		int sampleRate,
-		const MelConfig &config = MelConfig{});
+		const MelConfig &config = MelConfig{}) const;
 
 	[[nodiscard]] std::vector<float> resampleTo16k(
 		const std::vector<float> &pcmMono,

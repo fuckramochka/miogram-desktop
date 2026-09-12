@@ -125,27 +125,11 @@ void ExtendedLyricsSources::fetchFromYandex(
 		const QString &title,
 		const QString &artist,
 		Fn<void(const LrcSong &)> callback) {
-// Yandex Music has no public unauthenticated lyrics endpoint, so this
-// source performs a best-effort track search and returns empty when the
-// API requires OAuth. The empty result keeps the Auto chain moving to
-// Genius/YouTube/AI instead of stalling or fabricating lyrics.
-	auto *nam = new QNetworkAccessManager();
-	QUrl url(u"https://music.yandex.ru/handlers/music-search.jsx"_q);
-	QUrlQuery query;
-	query.addQueryItem(u"text"_q, (artist + u" "_q + title).trimmed());
-	query.addQueryItem(u"type"_q, u"tracks"_q);
-	url.setQuery(query);
-	QNetworkRequest req(url);
-	req.setRawHeader("User-Agent", "Miogram-Desktop/7.0.9");
-	req.setRawHeader("Accept", "application/json");
-	QNetworkReply *reply = nam->get(req);
-	QObject::connect(reply, &QNetworkReply::finished, [title, artist, callback, nam, reply] {
-		reply->deleteLater();
-		nam->deleteLater();
-		if (callback) {
-			callback(LrcSong{});
-		}
-	});
+	Q_UNUSED(title);
+	Q_UNUSED(artist);
+	if (callback) {
+		callback(LrcSong{});
+	}
 }
 
 void ExtendedLyricsSources::fetchFromGenius(

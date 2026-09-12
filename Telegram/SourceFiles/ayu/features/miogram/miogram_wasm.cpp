@@ -123,13 +123,20 @@ QByteArray EnvelopeCodec::encode(const QString &op, const QByteArray &payload) {
 // The fixed header lets both the Qt host and the Rust/WASM guest reject
 // mismatched frames before touching plugin memory.
 	QByteArray frame;
-	QDataStream stream(&frame, QIODevice::WriteOnly);
-	stream.setByteOrder(QDataStream::LittleEndian);
-	stream << qint32(kMiogramAbiVersion);
-	const auto opBytes = op.toUtf8();
-	stream << qint32(opBytes.size());
-	frame.append(opBytes);
-	stream << qint32(payload.size());
+	{
+		QDataStream header(&frame, QIODevice::WriteOnly);
+		header.setByteOrder(QDataStream::LittleEndian);
+		header << qint32(kMiogramAbiVersion);
+		header << qint32(op.toUtf8().size());
+	}
+	frame.append(op.toUtf8());
+	{
+		QByteArray tail;
+		QDataStream stream(&tail, QIODevice::WriteOnly);
+		stream.setByteOrder(QDataStream::LittleEndian);
+		stream << qint32(payload.size());
+		frame.append(tail);
+	}
 	frame.append(payload);
 	return frame;
 }

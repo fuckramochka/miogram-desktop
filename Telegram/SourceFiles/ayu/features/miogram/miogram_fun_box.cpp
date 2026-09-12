@@ -10,6 +10,7 @@
 #include <QtCore/QTimer>
 #include <QtGui/QPainter>
 #include <QtGui/QKeyEvent>
+#include <QtGui/QMouseEvent>
 
 namespace Miogram {
 
