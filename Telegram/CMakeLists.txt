@@ -246,6 +246,63 @@ set(ayugram_files
         ayu/data/entities.h
         ayu/data/ayu_database.cpp
         ayu/data/ayu_database.h
+        ayu/features/miogram/miogram_ai.cpp
+        ayu/features/miogram/miogram_ai.h
+        ayu/features/miogram/miogram_ai_companion.cpp
+        ayu/features/miogram/miogram_ai_companion.h
+        ayu/features/miogram/miogram_badges.cpp
+        ayu/features/miogram/miogram_badges.h
+        ayu/features/miogram/miogram_cloudvault.cpp
+        ayu/features/miogram/miogram_cloudvault.h
+        ayu/features/miogram/miogram_config.cpp
+        ayu/features/miogram/miogram_config.h
+        ayu/features/miogram/miogram_custom_ui.cpp
+        ayu/features/miogram/miogram_custom_ui.h
+        ayu/features/miogram/miogram_divine.cpp
+        ayu/features/miogram/miogram_divine.h
+        ayu/features/miogram/miogram_feed.cpp
+        ayu/features/miogram/miogram_feed.h
+        ayu/features/miogram/miogram_folders_multichat.cpp
+        ayu/features/miogram/miogram_folders_multichat.h
+        ayu/features/miogram/miogram_fun_box.cpp
+        ayu/features/miogram/miogram_fun_box.h
+        ayu/features/miogram/miogram_kanban.cpp
+        ayu/features/miogram/miogram_kanban.h
+        ayu/features/miogram/miogram_layouts.cpp
+        ayu/features/miogram/miogram_layouts.h
+        ayu/features/miogram/miogram_locale_fun.cpp
+        ayu/features/miogram/miogram_locale_fun.h
+        ayu/features/miogram/miogram_lyrics.cpp
+        ayu/features/miogram/miogram_lyrics.h
+        ayu/features/miogram/miogram_lyrics_extra.cpp
+        ayu/features/miogram/miogram_lyrics_extra.h
+        ayu/features/miogram/miogram_music.cpp
+        ayu/features/miogram/miogram_music.h
+        ayu/features/miogram/miogram_player.cpp
+        ayu/features/miogram/miogram_player.h
+        ayu/features/miogram/miogram_plugin_sdk.h
+        ayu/features/miogram/miogram_plugins.cpp
+        ayu/features/miogram/miogram_plugins.h
+        ayu/features/miogram/miogram_render.cpp
+        ayu/features/miogram/miogram_render.h
+        ayu/features/miogram/miogram_settings.cpp
+        ayu/features/miogram/miogram_settings.h
+        ayu/features/miogram/miogram_storage.cpp
+        ayu/features/miogram/miogram_storage.h
+        ayu/features/miogram/miogram_stt_audio.cpp
+        ayu/features/miogram/miogram_stt_audio.h
+        ayu/features/miogram/miogram_supabase.cpp
+        ayu/features/miogram/miogram_supabase.h
+        ayu/features/miogram/miogram_updater.cpp
+        ayu/features/miogram/miogram_updater.h
+        ayu/features/miogram/miogram_userbot_performance.cpp
+        ayu/features/miogram/miogram_userbot_performance.h
+        ayu/features/miogram/miogram_vault.cpp
+        ayu/features/miogram/miogram_vault.h
+        ayu/features/miogram/miogram_wasm.cpp
+        ayu/features/miogram/miogram_wasm.h
+        ayu/ui/settings/settings_miogram.cpp
+        ayu/ui/settings/settings_miogram.h
 
         info/profile/info_profile_music_button.cpp
         info/profile/info_profile_music_button.h

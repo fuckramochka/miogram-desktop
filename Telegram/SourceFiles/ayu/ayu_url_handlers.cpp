@@ -6,6 +6,8 @@
 // Copyright @Radolyn, 2026
 #include "ayu/ayu_url_handlers.h"
 
+#include "ayu/features/miogram/miogram_fun_box.h"
+#include "ayu/features/miogram/miogram_locale_fun.h"
 #include "lang_auto.h"
 #include "mainwindow.h"
 #include "ayu/ui/settings/settings_main.h"
@@ -22,6 +24,7 @@
 #include "window/window_controller.h"
 
 #include <QDesktopServices>
+#include <QtCore/QUrl>
 
 namespace AyuUrlHandlers {
 
@@ -240,7 +243,21 @@ bool HandleMusorDrop(
 	if (!controller) {
 		return false;
 	}
-	controller->showToast(QString("🗑️ Miogram Musor Drop Activated!"), 3000);
+	Q_UNUSED(match);
+	Q_UNUSED(context);
+	const auto media = Miogram::MusorDrop::locateMediaFile();
+	const auto hint = Miogram::MusorDrop::missingHint(
+		QString(),
+		QString(),
+		QString());
+	Miogram::MusorDropOverlay::show(media, hint);
+	if (media.isEmpty()) {
+		controller->showToast(hint, 3500);
+		return true;
+	}
+	if (!QDesktopServices::openUrl(QUrl::fromLocalFile(media))) {
+		controller->showToast(media, 3000);
+	}
 	return true;
 }
 

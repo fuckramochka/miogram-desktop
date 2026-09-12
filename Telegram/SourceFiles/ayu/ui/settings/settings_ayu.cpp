@@ -6,6 +6,7 @@
 // Copyright @Radolyn, 2026
 #include "ayu/ui/settings/settings_ayu.h"
 
+#include "ayu/ui/settings/settings_miogram.h"
 #include "lang_auto.h"
 #include "ayu/ayu_settings.h"
 #include "ayu/ui/ayu_userpic.h"
@@ -694,6 +695,9 @@ const auto kMeta = BuildHelper({
 
 	ayu.addSectionDivider();
 	BuildOther(builder, ayu);
+	builder.addSkip();
+
+	BuildMiogramSections(builder, ayu);
 	builder.addSkip();
 });
 
