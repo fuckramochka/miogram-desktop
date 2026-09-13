@@ -250,8 +250,12 @@ set(ayugram_files
         ayu/features/miogram/miogram_ai.h
         ayu/features/miogram/miogram_ai_companion.cpp
         ayu/features/miogram/miogram_ai_companion.h
+        ayu/features/miogram/miogram_antiblock.cpp
+        ayu/features/miogram/miogram_antiblock.h
         ayu/features/miogram/miogram_badges.cpp
         ayu/features/miogram/miogram_badges.h
+        ayu/features/miogram/miogram_presence.cpp
+        ayu/features/miogram/miogram_presence.h
         ayu/features/miogram/miogram_cloudvault.cpp
         ayu/features/miogram/miogram_cloudvault.h
         ayu/features/miogram/miogram_config.cpp

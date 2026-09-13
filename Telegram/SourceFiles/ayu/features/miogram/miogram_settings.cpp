@@ -7,7 +7,9 @@
 
 #include "ayu/features/miogram/miogram_ai.h"
 #include "ayu/features/miogram/miogram_ai_companion.h"
+#include "ayu/features/miogram/miogram_antiblock.h"
 #include "ayu/features/miogram/miogram_badges.h"
+#include "ayu/features/miogram/miogram_presence.h"
 #include "ayu/features/miogram/miogram_cloudvault.h"
 #include "ayu/features/miogram/miogram_config.h"
 #include "ayu/features/miogram/miogram_custom_ui.h"
@@ -234,6 +236,8 @@ void InitAllMiogramModules() {
 	AudioFrontend::instance().initialize();
 	OnnxWhisperBridge::instance().initialize();
 	WasmRuntime::instance().initialize();
+	AntiBlockEngine::instance().initialize();
+	DigitalPresenceManager::instance().initialize();
 	MiogramSettingsModel::instance().initialize();
 }
 

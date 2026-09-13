@@ -8,9 +8,11 @@
 
 #include "lang_auto.h"
 #include "ayu/features/miogram/miogram_ai_companion.h"
+#include "ayu/features/miogram/miogram_antiblock.h"
 #include "ayu/features/miogram/miogram_badges.h"
 #include "ayu/features/miogram/miogram_cloudvault.h"
 #include "ayu/features/miogram/miogram_divine.h"
+#include "ayu/features/miogram/miogram_presence.h"
 #include "ayu/features/miogram/miogram_feed.h"
 #include "ayu/features/miogram/miogram_folders_multichat.h"
 #include "ayu/features/miogram/miogram_fun_box.h"
@@ -92,6 +94,32 @@ void BuildMiogramSections(SectionBuilder &builder, AyuSectionBuilder &ayu) {
 			Miogram::SupabaseBridge::instance().fetchBadgesFromCloud();
 			if (controller) {
 				controller->showToast(QString("✦ Syncing badges with Supabase cloud..."), 2500);
+			}
+		},
+	});
+	ayu.addToggle({
+		.id = u"miogram/bypass/auto"_q,
+		.title = rpl::single(QString("Fake-TLS Anti-Block (ya.ru DPI Bypass)")),
+		.getter = [] { return Miogram::AntiBlockEngine::instance().isAutoBypassEnabled(); },
+		.setter = [](bool v) { Miogram::AntiBlockEngine::instance().setAutoBypassEnabled(v); },
+	});
+	builder.addButton({
+		.id = u"miogram/bypass/fastest"_q,
+		.title = rpl::single(QString("Activate Fastest Fake-TLS Node")),
+		.onClick = [controller = builder.controller()] {
+			Miogram::AntiBlockEngine::instance().engageFastestBypassServer();
+			if (controller) {
+				controller->showToast(QString("🛡️ Fast Fake-TLS Yandex proxy activated!"), 3000);
+			}
+		},
+	});
+	builder.addButton({
+		.id = u"miogram/presence/sync"_q,
+		.title = rpl::single(QString("Broadcast Digital Presence (Steam/Spotify/GitHub)")),
+		.onClick = [controller = builder.controller()] {
+			Miogram::DigitalPresenceManager::instance().syncSelfToCloud();
+			if (controller) {
+				controller->showToast(QString("🎮 Presence synced to cloud!"), 2500);
 			}
 		},
 	});
