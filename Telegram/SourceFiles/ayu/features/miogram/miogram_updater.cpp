@@ -83,7 +83,8 @@ void MiogramUpdater::checkAndShow(Fn<void(UpdateInfo)> callback, bool manualChec
 
 void MiogramUpdater::fetchLatestRelease(Fn<void(UpdateInfo)> callback) {
 	auto *nam = new QNetworkAccessManager();
-	QNetworkRequest req(QUrl(latestReleaseApi()));
+	const QUrl url(latestReleaseApi());
+	QNetworkRequest req(url);
 	req.setRawHeader("Accept", "application/vnd.github.v3+json");
 	req.setRawHeader(
 		"User-Agent",
@@ -208,7 +209,8 @@ void DownloadManager::download(
 	}
 	_busy = true;
 	auto *nam = new QNetworkAccessManager();
-	QNetworkRequest req(QUrl(url));
+	const QUrl requestUrl(url);
+	QNetworkRequest req(requestUrl);
 	QNetworkReply *reply = nam->get(req);
 	QObject::connect(reply, &QNetworkReply::finished, [this, callback, nam, reply] {
 		reply->deleteLater();
