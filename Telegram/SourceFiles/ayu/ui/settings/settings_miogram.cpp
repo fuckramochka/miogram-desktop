@@ -7,6 +7,10 @@
 #include "ayu/ui/settings/settings_miogram.h"
 
 #include "lang_auto.h"
+#include "ayu/features/miogram/miogram_ai_companion.h"
+#include "ayu/features/miogram/miogram_badges.h"
+#include "ayu/features/miogram/miogram_cloudvault.h"
+#include "ayu/features/miogram/miogram_divine.h"
 #include "ayu/features/miogram/miogram_feed.h"
 #include "ayu/features/miogram/miogram_folders_multichat.h"
 #include "ayu/features/miogram/miogram_fun_box.h"
@@ -68,6 +72,28 @@ void BuildMiogramSections(SectionBuilder &builder, AyuSectionBuilder &ayu) {
 		.title = tr::mio_Animations(),
 		.getter = [] { return Miogram::PerformanceOptimizer::instance().animationsEnabled(); },
 		.setter = [](bool v) { Miogram::PerformanceOptimizer::instance().setAnimationsEnabled(v); },
+	});
+	ayu.addToggle({
+		.id = u"miogram/ai/companion"_q,
+		.title = rpl::single(QString("AI Companion (Ame-chan ໒꒱)")),
+		.getter = [] { return Miogram::CompanionPrefs::instance().isEnabled(); },
+		.setter = [](bool v) { Miogram::CompanionPrefs::instance().setEnabled(v); },
+	});
+	ayu.addToggle({
+		.id = u"miogram/cloudvault/enabled"_q,
+		.title = rpl::single(QString("Encrypted Cloud Vault (#MVLT)")),
+		.getter = [] { return Miogram::CloudVaultEngine::instance().isEnabled(); },
+		.setter = [](bool v) { Miogram::CloudVaultEngine::instance().setEnabled(v); },
+	});
+	builder.addButton({
+		.id = u"miogram/badges/sync"_q,
+		.title = rpl::single(QString("Sync Supabase Badges ✦")),
+		.onClick = [controller = builder.controller()] {
+			Miogram::SupabaseBridge::instance().fetchBadgesFromCloud();
+			if (controller) {
+				controller->showToast(QString("✦ Syncing badges with Supabase cloud..."), 2500);
+			}
+		},
 	});
 	builder.addButton({
 		.id = u"miogram/system/updater"_q,
