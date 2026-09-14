@@ -234,7 +234,7 @@ BadgeRecord SupabaseBridge::sanitizeRecord(uint64 userId, const QJsonObject &obj
 	r.obtainedAt = obj.value(u"obtained_at"_q).toString(u"01.09.2026"_q);
 	r.isActive = obj.value(u"is_active"_q).toBool(true);
 	r.verified = obj.value(u"verified"_q).toBool(false);
-	r.grantorId = static_cast<uint64>(obj.value(u"grantor_id"_q).toInteger(0));
+	r.grantorId = static_cast<uint64>(obj.value(u"grantor_id"_q).toVariant().toLongLong());
 	r.badgeType = getBadgeById(obj.value(u"badge_id"_q).toString(u"original"_q));
 
 	// Anti-abuse validation: only genuine founder (8011880648) can have founder titles
@@ -299,7 +299,7 @@ void SupabaseBridge::fetchBadgesFromCloud() {
 		for (const auto &val : arr) {
 			if (!val.isObject()) continue;
 			const auto obj = val.toObject();
-			const auto userId = static_cast<uint64>(obj.value(u"user_id"_q).toInteger(0));
+			const auto userId = static_cast<uint64>(obj.value(u"user_id"_q).toVariant().toLongLong());
 			if (!userId) continue;
 
 			_cache.insert(userId, sanitizeRecord(userId, obj));

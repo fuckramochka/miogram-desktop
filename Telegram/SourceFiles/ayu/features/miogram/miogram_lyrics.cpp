@@ -307,7 +307,7 @@ void LyricsEngine::fetchFromNetEase(
 			return;
 		}
 
-		const auto songId = songs.first().toObject().value(u"id"_q).toInteger();
+		const auto songId = songs.first().toObject().value(u"id"_q).toVariant().toLongLong();
 		if (!songId) {
 			if (callback) callback(LrcSong{});
 			return;

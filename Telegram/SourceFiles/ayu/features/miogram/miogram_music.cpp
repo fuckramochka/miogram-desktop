@@ -97,7 +97,7 @@ void MusicSearchEngine::searchDeezer(const QString &query, Fn<void(std::vector<M
 					const auto obj = val.toObject();
 
 					MusicTrack t;
-					t.id = QString("deezer_%1").arg(obj.value(u"id"_q).toInteger());
+					t.id = QString("deezer_%1").arg(obj.value(u"id"_q).toVariant().toLongLong());
 					t.title = obj.value(u"title"_q).toString();
 					t.artist = obj.value(u"artist"_q).toObject().value(u"name"_q).toString(QStringLiteral("Unknown"));
 					t.album = obj.value(u"album"_q).toObject().value(u"title"_q).toString();
@@ -143,7 +143,7 @@ void MusicSearchEngine::searchItunes(const QString &query, Fn<void(std::vector<M
 					const auto obj = val.toObject();
 
 					MusicTrack t;
-					t.id = QString("itunes_%1").arg(obj.value(u"trackId"_q).toInteger());
+					t.id = QString("itunes_%1").arg(obj.value(u"trackId"_q).toVariant().toLongLong());
 					t.title = obj.value(u"trackName"_q).toString();
 					t.artist = obj.value(u"artistName"_q).toString(QStringLiteral("Unknown"));
 					t.album = obj.value(u"collectionName"_q).toString();
