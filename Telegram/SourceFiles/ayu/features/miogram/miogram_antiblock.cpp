@@ -45,7 +45,7 @@ void AntiBlockEngine::initialize() {
 	loadSettings();
 
 	// Throttle check timer
-	auto *timer = new QTimer(Core::App().instance());
+	auto *timer = new QTimer(&Core::App());
 	QObject::connect(timer, &QTimer::timeout, [this] {
 		checkThrottling();
 	});
@@ -199,7 +199,7 @@ void AntiBlockEngine::fetchRemotePoolAsync() {
 			const auto o = v.toObject();
 
 			BypassServer s;
-			s.id = o.value(u"id"_q).toString(u"remote_" + QString::number(rand()));
+			s.id = o.value(u"id"_q).toString(u"remote_"_q + QString::number(rand()));
 			s.name = o.value(u"name"_q).toString(QStringLiteral("Fake-TLS Node"));
 			s.host = o.value(u"host"_q).toString();
 			s.port = static_cast<uint32>(o.value(u"port"_q).toInt(443));

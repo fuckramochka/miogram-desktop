@@ -73,7 +73,7 @@ QJsonObject SerializePresence(const UserPresenceCard &card) {
 
 UserPresenceCard DeserializePresence(const QJsonObject &root) {
 	UserPresenceCard card;
-	card.userId = static_cast<uint64>(root.value(u"user_id"_q).toInteger(0));
+	card.userId = static_cast<uint64>(root.value(u"user_id"_q).toVariant().toLongLong());
 	card.isOnline = root.value(u"online"_q).toBool(false);
 
 	if (root.contains(u"steam"_q)) {
