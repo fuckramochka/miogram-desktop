@@ -38,40 +38,40 @@ using namespace Builder;
 using namespace AyuBuilder;
 
 void BuildMiogramSections(SectionBuilder &builder, AyuSectionBuilder &ayu) {
-	builder.addSubsectionTitle(tr::mio_SectionPlayer());
+	builder.addSubsectionTitle(rpl::single(QString("Miogram")));
 	ayu.addToggle({
 		.id = u"miogram/player/shuffle"_q,
-		.title = tr::mio_PlayerShuffle(),
+		.title = rpl::single(QString("Shuffle")),
 		.getter = [] { return Miogram::PlayerPrefs::instance().shuffle(); },
 		.setter = [](bool v) { Miogram::PlayerPrefs::instance().setShuffle(v); },
 	});
 	ayu.addToggle({
 		.id = u"miogram/feed/enabled"_q,
-		.title = tr::mio_FeedEnabled(),
+		.title = rpl::single(QString("Smart Feed")),
 		.getter = [] { return Miogram::SmartFeedService::instance().isEnabled(); },
 		.setter = [](bool v) { Miogram::SmartFeedService::instance().setEnabled(v); },
 	});
 	ayu.addToggle({
 		.id = u"miogram/folders/floating"_q,
-		.title = tr::mio_FloatingChats(),
+		.title = rpl::single(QString("Floating chats")),
 		.getter = [] { return Miogram::FloatingChatState::instance().isEnabled(); },
 		.setter = [](bool v) { Miogram::FloatingChatState::instance().setEnabled(v); },
 	});
 	ayu.addToggle({
 		.id = u"miogram/plugins/notifications"_q,
-		.title = tr::mio_InAppNotifications(),
+		.title = rpl::single(QString("In-app notifications")),
 		.getter = [] { return Miogram::InAppNotifications::instance().isEnabled(); },
 		.setter = [](bool v) { Miogram::InAppNotifications::instance().setEnabled(v); },
 	});
 	ayu.addToggle({
 		.id = u"miogram/privacy/double-bottom"_q,
-		.title = tr::mio_DoubleBottom(),
+		.title = rpl::single(QString("Double bottom")),
 		.getter = [] { return Miogram::DoubleBottomManager::instance().isDoubleBottomEnabled(); },
 		.setter = [](bool v) { Miogram::DoubleBottomManager::instance().setDoubleBottomEnabled(v); },
 	});
 	ayu.addToggle({
 		.id = u"miogram/system/animations"_q,
-		.title = tr::mio_Animations(),
+		.title = rpl::single(QString("Miogram animations")),
 		.getter = [] { return Miogram::PerformanceOptimizer::instance().animationsEnabled(); },
 		.setter = [](bool v) { Miogram::PerformanceOptimizer::instance().setAnimationsEnabled(v); },
 	});
@@ -125,7 +125,7 @@ void BuildMiogramSections(SectionBuilder &builder, AyuSectionBuilder &ayu) {
 	});
 	builder.addButton({
 		.id = u"miogram/system/updater"_q,
-		.title = tr::mio_CheckUpdates(),
+		.title = rpl::single(QString("Check for Miogram updates")),
 		.onClick = [controller = builder.controller()] {
 			Miogram::MiogramUpdater::instance().checkAndShow(
 				[controller](const Miogram::UpdateInfo &info) {
@@ -145,7 +145,7 @@ void BuildMiogramSections(SectionBuilder &builder, AyuSectionBuilder &ayu) {
 	});
 	builder.addButton({
 		.id = u"miogram/system/musordrop"_q,
-		.title = tr::mio_MusorDrop(),
+		.title = rpl::single(QString("Musordrop (tg://musor_drop)")),
 		.onClick = [controller = builder.controller()] {
 			const auto media = Miogram::MusorDrop::locateMediaFile();
 			const auto hint = Miogram::MusorDrop::missingHint(

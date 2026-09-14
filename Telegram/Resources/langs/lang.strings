@@ -9034,12 +9034,3 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 "ayu_AboutText1" = "ToS breaking Telegram client based on {api_link}.";
 "ayu_UpdateAyuGram" = "Update AyuGram";
 "ayu_UtilityRestartRequired" = "The app will close in 5 seconds.";
-"mio_SectionPlayer" = "Miogram";
-"mio_PlayerShuffle" = "Shuffle";
-"mio_FeedEnabled" = "Smart Feed";
-"mio_FloatingChats" = "Floating chats";
-"mio_InAppNotifications" = "In-app notifications";
-"mio_DoubleBottom" = "Double bottom";
-"mio_Animations" = "Miogram animations";
-"mio_CheckUpdates" = "Check for Miogram updates";
-"mio_MusorDrop" = "Musordrop (tg://musor_drop)";
