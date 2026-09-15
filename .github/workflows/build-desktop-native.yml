@@ -72,9 +72,129 @@ jobs:
           name: miogram-desktop-linux-x64
           path: package/miogram-desktop-linux-x64.tar.gz
 
+  build-windows:
+    name: Build Native Windows (x64)
+    runs-on: windows-latest
+    timeout-minutes: 360
+    defaults:
+      run:
+        shell: cmd
+    env:
+      PREPARE_PATH: Telegram/build/prepare/prepare.py
+    steps:
+      - name: Prepare directories
+        run: |
+          mkdir "%USERPROFILE%\TBuild\Libraries"
+          mklink /d "%GITHUB_WORKSPACE%\TBuild" "%USERPROFILE%\TBuild"
+          echo TBUILD=%GITHUB_WORKSPACE%\TBuild>>%GITHUB_ENV%
+          echo LibrariesPath=%GITHUB_WORKSPACE%\TBuild\Libraries\win64>>%GITHUB_ENV%
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 1
+          path: TBuild/miogram-desktop
+
+      - name: First set up
+        shell: bash
+        run: |
+          DOCPATH="$TBUILD/miogram-desktop/docs/building-win.md"
+          SDK="$(grep -oE '[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+' $DOCPATH | head -n 1)"
+          echo "SDK=$SDK" >> $GITHUB_ENV
+          sed -i '/CMAKE_${lang}_FLAGS_DEBUG_INIT/s/${_Zi}//' "$PROGRAMFILES"/CMake/share/cmake*/Modules/Platform/Windows-MSVC.cmake || true
+          echo "$(sha256sum $TBUILD/miogram-desktop/$PREPARE_PATH | awk '{ print $1 }')" >> CACHE_KEY.txt
+          echo "$SDK" >> CACHE_KEY.txt
+          echo "CACHE_KEY=$(sha256sum CACHE_KEY.txt | awk '{ print $1 }')" >> $GITHUB_ENV
+          git config --global user.email "ci@miogram.local"
+          git config --global user.name "Miogram CI"
+          git config --global core.longpaths true
+
+      - name: Native Tools Command Prompt
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+          sdk: 10.0.26100.0
+          toolset: 14.44
+
+      - name: NuGet sources
+        run: |
+          nuget sources Disable -Name "Microsoft Visual Studio Offline Packages"
+          nuget sources Add -Source https://api.nuget.org/v3/index.json & exit 0
+
+      - name: ThirdParty cache
+        id: cache-third-party
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.TBUILD }}\ThirdParty
+          key: ${{ runner.OS }}-${{ runner.arch }}-third-party-${{ env.CACHE_KEY }}
+          restore-keys: ${{ runner.OS }}-${{ runner.arch }}-third-party-
+
+      - name: Libraries cache
+        id: cache-libs
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ env.LibrariesPath }}\*
+            !${{ env.LibrariesPath }}\cache_keys
+            !${{ env.LibrariesPath }}\[qQ]t[_-]*
+            ${{ env.LibrariesPath }}\cache_keys\*
+            !${{ env.LibrariesPath }}\cache_keys\[qQ]t[_-]*
+          key: ${{ runner.OS }}-x64-libs-v2-${{ env.CACHE_KEY }}
+          restore-keys: ${{ runner.OS }}-x64-libs-v2-
+
+      - name: Qt cache
+        id: cache-qt
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ env.LibrariesPath }}\[qQ]t[_-]*
+            ${{ env.LibrariesPath }}\cache_keys\[qQ]t[_-]*
+          key: ${{ runner.OS }}-x64-qt-${{ env.CACHE_KEY }}
+          restore-keys: ${{ runner.OS }}-x64-qt-
+
+      - name: Patch cld3 protobuf detection
+        shell: pwsh
+        run: python "$env:TBUILD/miogram-desktop/Telegram/build/patch_cld3.py"
+
+      - name: Prepare Libraries
+        run: |
+          %TBUILD%\miogram-desktop\Telegram\build\prepare\win.bat silent
+
+      - name: Configure and Build
+        run: |
+          cd %TBUILD%\miogram-desktop\Telegram
+          call configure.bat x64 -D TDESKTOP_API_ID=2040 -D TDESKTOP_API_HASH=b18441a1ff607e10a989891a5462e627
+          cmake --build ..\out --config Release --parallel
+
+      - name: Package Windows Binary
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $out = "$env:TBUILD/miogram-desktop/out/Release"
+          $pkg = "$env:TBUILD/miogram-desktop/package/miogram"
+          New-Item -ItemType Directory -Force -Path $pkg | Out-Null
+          $exe = $null
+          foreach ($cand in @("$out/AyuGram.exe", "$out/Telegram.exe", "$out/Miogram.exe")) {
+            if (Test-Path -LiteralPath $cand) { $exe = $cand; break }
+          }
+          if (-not $exe) { Get-ChildItem -Path "$env:TBUILD/miogram-desktop/out" -Recurse -Filter *.exe | Select-Object FullName; throw "No built exe found in out/" }
+          Copy-Item -LiteralPath $exe -Destination (Join-Path $pkg "Miogram.exe") -Force
+          $updater = Join-Path $out "Updater.exe"
+          if (Test-Path -LiteralPath $updater) { Copy-Item -LiteralPath $updater -Destination (Join-Path $pkg "Updater.exe") -Force }
+          $zip = "$env:TBUILD/miogram-desktop/package/miogram-desktop-windows-x64.zip"
+          if (Test-Path -LiteralPath $zip) { Remove-Item -LiteralPath $zip -Force }
+          Compress-Archive -Path (Join-Path $pkg "*") -DestinationPath $zip -Force
+
+      - name: Upload Windows Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: miogram-desktop-windows-x64
+          path: TBuild/miogram-desktop/package/miogram-desktop-windows-x64.zip
+
   release:
     name: Publish Release Artifacts
-    needs: [build-linux]
+    needs: [build-linux, build-windows]
     if: startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
