@@ -73,10 +73,12 @@ jobs:
             @('Microsoft.VisualStudio.Component.VC.ATL', 'Microsoft.VisualStudio.Component.VC.ATLMFC', 'Microsoft.VisualStudio.Component.Windows11SDK.26100')
           )
           foreach ($ids in $attempts) {
-            $argList = @('modify', '--installPath', $vsPath, '--quiet', '--wait', '--norestart', '--nocache') + ($ids | ForEach-Object { @('--add', $_) })
+            $modifyArgs = @('modify', '--installPath', $vsPath, '--quiet', '--wait', '--norestart', '--nocache')
+            foreach ($id in $ids) { $modifyArgs += @('--add', $id) }
             Write-Host "Installing: $($ids -join ', ')"
-            $p = Start-Process -FilePath $installer -ArgumentList $argList -Wait -PassThru
-            Write-Host "vs_installer exit code: $($p.ExitCode)"
+            & $installer @modifyArgs
+            $code = $LASTEXITCODE
+            Write-Host "vs_installer exit code: $code"
             $hit = Test-Atl
             if ($hit) { Write-Host "ATL now present: $($hit.FullName)"; exit 0 }
           }
