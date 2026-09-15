@@ -9,69 +9,6 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-linux:
-    name: Build Native Linux (x64)
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          submodules: recursive
-          fetch-depth: 1
-
-      - name: Prepare workspace permissions
-        run: |
-          mkdir -p out package
-          sudo chmod -R 777 "$GITHUB_WORKSPACE"
-
-      - name: Patch cld3 protobuf detection
-        run: |
-          python3 Telegram/build/patch_cld3.py
-
-      - name: Run Build in centos_env container
-        run: |
-          docker run --rm \
-            -u 0:0 \
-            -e HOME=/root \
-            -v "$GITHUB_WORKSPACE:/usr/src/tdesktop" \
-            ghcr.io/telegramdesktop/tdesktop/centos_env:latest \
-            /bin/bash -c "
-              set -e
-              dnf -y install protobuf-devel protobuf-compiler || true
-              cd /usr/src/tdesktop/Telegram
-              ./configure.sh -D TDESKTOP_API_ID=2040 -D TDESKTOP_API_HASH=b18441a1ff607e10a989891a5462e627
-              cmake --build ../out --config Release --parallel 4
-            "
-
-      - name: Restore permissions
-        if: always()
-        run: |
-          sudo chmod -R 777 "$GITHUB_WORKSPACE" || true
-
-      - name: Package Linux Binary
-        run: |
-          mkdir -p package/miogram
-          if [ -f "out/Release/Telegram" ]; then
-            cp out/Release/Telegram package/miogram/miogram
-          elif [ -f "out/Release/Miogram" ]; then
-            cp out/Release/Miogram package/miogram/miogram
-          elif [ -f "out/Telegram" ]; then
-            cp out/Telegram package/miogram/miogram
-          elif [ -f "out/Miogram" ]; then
-            cp out/Miogram package/miogram/miogram
-          else
-            find out/ -maxdepth 3 -type f -executable -exec cp {} package/miogram/ \;
-          fi
-          cd package
-          tar -czvf miogram-desktop-linux-x64.tar.gz miogram/
-          cd ..
-
-      - name: Upload Linux Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: miogram-desktop-linux-x64
-          path: package/miogram-desktop-linux-x64.tar.gz
-
   build-windows:
     name: Build Native Windows (x64)
     runs-on: windows-latest
@@ -125,7 +62,7 @@ jobs:
           Write-Host "VS installation path: $vsPath"
           if (-not (Test-Path -LiteralPath $vsPath)) { throw 'VS installation not found' }
           function Test-Atl {
-            Get-ChildItem -Path (Join-Path $vsPath 'VC\Tools\MSVC') -Filter 'atlbase.h' -Recurse -Depth 4 -ErrorAction SilentlyContinue | Select-Object -First 1
+            Get-ChildItem -Path (Join-Path $vsPath 'VC\Tools\MSVC\14.44*') -Filter 'atlbase.h' -Recurse -Depth 4 -ErrorAction SilentlyContinue | Select-Object -First 1
           }
           $already = Test-Atl
           if ($already) { Write-Host "ATL already present: $($already.FullName)"; exit 0 }
@@ -229,7 +166,7 @@ jobs:
 
   release:
     name: Publish Release Artifacts
-    needs: [build-linux, build-windows]
+    needs: [build-windows]
     if: startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
