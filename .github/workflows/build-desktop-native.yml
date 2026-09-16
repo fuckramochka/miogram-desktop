@@ -69,8 +69,12 @@ jobs:
           $installer = Join-Path $env:RUNNER_TEMP 'vs_enterprise.exe'
           if (-not (Test-Path -LiteralPath $installer)) {
             Write-Host 'Downloading fresh VS bootstrapper...'
-            Invoke-WebRequest -Uri 'https://aka.ms/vs/18/release/vs_enterprise.exe' -OutFile $installer
+            Invoke-WebRequest -Uri 'https://aka.ms/vs/18/stable/vs_enterprise.exe' -OutFile $installer
           }
+          $size = (Get-Item -LiteralPath $installer).Length
+          $mz = [System.Text.Encoding]::ASCII.GetString([System.IO.File]::ReadAllBytes($installer)[0..1])
+          Write-Host "Bootstrapper: $size bytes, header: $mz"
+          if (($size -lt 100KB) -or ($mz -ne 'MZ')) { throw "Downloaded bootstrapper is invalid ($size bytes, header $mz)" }
           function Show-InstallerLog {
             $errLog = Get-ChildItem -Path $env:TEMP -Filter 'dd_*_errors.log' -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending | Select-Object -First 1
             if ($errLog) {
