@@ -66,23 +66,62 @@ jobs:
           }
           $already = Test-Atl
           if ($already) { Write-Host "ATL already present: $($already.FullName)"; exit 0 }
+          function Dump-InstallerLogs {
+            $logs = Get-ChildItem -Path $env:TEMP -Filter 'dd_*.log' -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending | Select-Object -First 2
+            foreach ($log in $logs) {
+              Write-Host "--- $($log.FullName) (tail) ---"
+              Get-Content -LiteralPath $log.FullName -Tail 25 -ErrorAction SilentlyContinue | ForEach-Object { Write-Host $_ }
+            }
+            if (-not $logs) { Write-Host 'No dd_*.log found in TEMP' }
+          }
+          function Invoke-VsModify($exe, $ids) {
+            $argList = @('modify', '--installPath', $vsPath, '--quiet', '--wait', '--norestart')
+            foreach ($id in $ids) { $argList += '--add'; $argList += $id }
+            Write-Host "Running: $exe $($argList -join ' ')"
+            $p = Start-Process -FilePath $exe -ArgumentList $argList -Wait -PassThru
+            Write-Host "exit code: $($p.ExitCode)"
+            return $p.ExitCode
+          }
           $installer = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vs_installer.exe"
           if (-not (Test-Path -LiteralPath $installer)) { throw 'vs_installer.exe not found' }
+          Write-Host "vs_installer version: $((Get-Item -LiteralPath $installer).VersionInfo.FileVersion)"
+          $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+          $instanceVersion = & $vswhere -version "[18.0,19.0)" -products * -property installationVersion 2>$null | Select-Object -First 1
+          if (-not $instanceVersion) { $instanceVersion = & $vswhere -products * -property installationVersion 2>$null | Select-Object -First 1 }
+          Write-Host "VS instance version: $instanceVersion"
           $attempts = @(
             @('Microsoft.VisualStudio.Component.VC.14.44.17.14.ATL', 'Microsoft.VisualStudio.Component.VC.14.44.17.14.MFC', 'Microsoft.VisualStudio.Component.Windows11SDK.26100'),
             @('Microsoft.VisualStudio.Component.VC.ATL', 'Microsoft.VisualStudio.Component.VC.ATLMFC', 'Microsoft.VisualStudio.Component.Windows11SDK.26100')
           )
           foreach ($ids in $attempts) {
-            $argList = @('modify', '--installPath', $vsPath, '--quiet', '--wait', '--norestart')
-            foreach ($id in $ids) { $argList += '--add'; $argList += $id }
             Write-Host "Installing: $($ids -join ', ')"
-            $p = Start-Process -FilePath $installer -ArgumentList $argList -Wait -PassThru
-            $code = $p.ExitCode
-            Write-Host "vs_installer exit code: $code"
+            $code = Invoke-VsModify $installer $ids
             if ($code -eq 3010) { Write-Host 'Reboot required, continuing without reboot' }
             $hit = Test-Atl
             if ($hit) { Write-Host "ATL now present: $($hit.FullName)"; exit 0 }
           }
+          Dump-InstallerLogs
+          $major = ($instanceVersion -split '\.')[0]
+          $channel = if ($major -ge 18) { '18' } else { '17' }
+          $boot = Join-Path $env:TEMP 'vs_enterprise_boot.exe'
+          foreach ($ch in @($channel, '17', '18') | Select-Object -Unique) {
+            try {
+              Write-Host "Downloading VS $ch bootstrapper..."
+              Invoke-WebRequest -Uri "https://aka.ms/vs/$ch/release/vs_enterprise.exe" -OutFile $boot -UseBasicParsing
+              if ((Get-Item -LiteralPath $boot).Length -gt 1MB) { break }
+              Write-Host 'Bootstrapper too small, trying next channel'
+            } catch {
+              Write-Host "Download failed: $_"
+            }
+          }
+          if (-not (Test-Path -LiteralPath $boot)) { throw 'Could not download VS bootstrapper' }
+          foreach ($ids in $attempts) {
+            Write-Host "Installing via bootstrapper: $($ids -join ', ')"
+            $code = Invoke-VsModify $boot $ids
+            $hit = Test-Atl
+            if ($hit) { Write-Host "ATL now present: $($hit.FullName)"; exit 0 }
+          }
+          Dump-InstallerLogs
           throw 'atlbase.h still missing after installing ATL/MFC components'
 
       - name: Native Tools Command Prompt
