@@ -69,19 +69,23 @@ jobs:
           function Dump-InstallerLogs {
             $logs = Get-ChildItem -Path $env:TEMP -Filter 'dd_*.log' -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending | Select-Object -First 2
             foreach ($log in $logs) {
-              Write-Host "--- $($log.FullName) (tail) ---"
-              Get-Content -LiteralPath $log.FullName -Tail 25 -ErrorAction SilentlyContinue | ForEach-Object { Write-Host $_ }
+              Write-Host "--- $($log.FullName) (head) ---"
+              Get-Content -LiteralPath $log.FullName -TotalCount 40 -ErrorAction SilentlyContinue | ForEach-Object { Write-Host $_ }
             }
             if (-not $logs) { Write-Host 'No dd_*.log found in TEMP' }
           }
-          function Invoke-VsModify($exe, $ids) {
-            $argList = @('modify', '--installPath', $vsPath, '--quiet', '--wait', '--norestart')
+          function Invoke-VsModify($exe, $ids, $pathOverride) {
+            $target = if ($pathOverride) { $pathOverride } else { $vsPath }
+            $argList = @('modify', '--installPath', $target, '--quiet', '--wait', '--norestart')
             foreach ($id in $ids) { $argList += '--add'; $argList += $id }
             Write-Host "Running: $exe $($argList -join ' ')"
             $p = Start-Process -FilePath $exe -ArgumentList $argList -Wait -PassThru
             Write-Host "exit code: $($p.ExitCode)"
             return $p.ExitCode
           }
+          $vsShort = (cmd /c "for %A in (""$vsPath"") do @echo %~sA" 2>$null | Select-Object -First 1)
+          if ($vsShort) { $vsShort = $vsShort.Trim() }
+          Write-Host "VS short path: $vsShort"
           $installer = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vs_installer.exe"
           if (-not (Test-Path -LiteralPath $installer)) { throw 'vs_installer.exe not found' }
           Write-Host "vs_installer version: $((Get-Item -LiteralPath $installer).VersionInfo.FileVersion)"
@@ -94,11 +98,13 @@ jobs:
             @('Microsoft.VisualStudio.Component.VC.ATL', 'Microsoft.VisualStudio.Component.VC.ATLMFC', 'Microsoft.VisualStudio.Component.Windows11SDK.26100')
           )
           foreach ($ids in $attempts) {
-            Write-Host "Installing: $($ids -join ', ')"
-            $code = Invoke-VsModify $installer $ids
-            if ($code -eq 3010) { Write-Host 'Reboot required, continuing without reboot' }
-            $hit = Test-Atl
-            if ($hit) { Write-Host "ATL now present: $($hit.FullName)"; exit 0 }
+            foreach ($target in @($vsPath, $vsShort) | Where-Object { $_ } | Select-Object -Unique) {
+              Write-Host "Installing: $($ids -join ', ') at $target"
+              $code = Invoke-VsModify $installer $ids $target
+              if ($code -eq 3010) { Write-Host 'Reboot required, continuing without reboot' }
+              $hit = Test-Atl
+              if ($hit) { Write-Host "ATL now present: $($hit.FullName)"; exit 0 }
+            }
           }
           Dump-InstallerLogs
           $major = ($instanceVersion -split '\.')[0]
