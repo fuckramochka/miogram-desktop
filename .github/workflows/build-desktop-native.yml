@@ -62,7 +62,7 @@ jobs:
           Write-Host "VS installation path: $vsPath"
           if (-not (Test-Path -LiteralPath $vsPath)) { throw 'VS installation not found' }
           function Test-Atl {
-            Get-ChildItem -Path (Join-Path $vsPath 'VC\Tools\MSVC\14.44*') -Filter 'atlbase.h' -Recurse -Depth 4 -ErrorAction SilentlyContinue | Select-Object -First 1
+            Get-ChildItem -Path (Join-Path $vsPath 'VC\Tools\MSVC\14.*') -Filter 'atlbase.h' -Recurse -Depth 4 -ErrorAction SilentlyContinue | Select-Object -First 1
           }
           $already = Test-Atl
           if ($already) { Write-Host "ATL already present: $($already.FullName)"; exit 0 }
@@ -73,10 +73,10 @@ jobs:
             @('Microsoft.VisualStudio.Component.VC.ATL', 'Microsoft.VisualStudio.Component.VC.ATLMFC', 'Microsoft.VisualStudio.Component.Windows11SDK.26100')
           )
           foreach ($ids in $attempts) {
-            $addArgs = ($ids | ForEach-Object { '--add "' + $_ + '"' }) -join ' '
-            $argString = 'modify --installPath "' + $vsPath + '" --quiet --wait --norestart --nocache ' + $addArgs
+            $argList = @('modify', '--installPath', $vsPath, '--quiet', '--wait', '--norestart')
+            foreach ($id in $ids) { $argList += '--add'; $argList += $id }
             Write-Host "Installing: $($ids -join ', ')"
-            $p = Start-Process -FilePath $installer -ArgumentList $argString -Wait -PassThru
+            $p = Start-Process -FilePath $installer -ArgumentList $argList -Wait -PassThru
             $code = $p.ExitCode
             Write-Host "vs_installer exit code: $code"
             if ($code -eq 3010) { Write-Host 'Reboot required, continuing without reboot' }
