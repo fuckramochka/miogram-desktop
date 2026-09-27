@@ -21,8 +21,8 @@ jobs:
     steps:
       - name: Prepare directories
         run: |
-          mkdir "%USERPROFILE%\TBuild\Libraries"
-          mklink /d "%GITHUB_WORKSPACE%\TBuild" "%USERPROFILE%\TBuild"
+          mkdir "%GITHUB_WORKSPACE%\TBuild\Libraries"
+          mklink /d "%USERPROFILE%\TBuild" "%GITHUB_WORKSPACE%\TBuild"
           echo TBUILD=%GITHUB_WORKSPACE%\TBuild>>%GITHUB_ENV%
           echo LibrariesPath=%GITHUB_WORKSPACE%\TBuild\Libraries\win64>>%GITHUB_ENV%
 
