@@ -62,7 +62,7 @@ jobs:
           Write-Host "VS installation path: $vsPath"
           if (-not (Test-Path -LiteralPath $vsPath)) { throw 'VS installation not found' }
           function Test-Atl {
-            Get-ChildItem -Path (Join-Path $vsPath 'VC\Tools\MSVC\14.*') -Filter 'atlbase.h' -Recurse -Depth 4 -ErrorAction SilentlyContinue | Select-Object -First 1
+            Get-ChildItem -Path (Join-Path $vsPath 'VC\Tools\MSVC\14.44*') -Filter 'atlbase.h' -Recurse -Depth 4 -ErrorAction SilentlyContinue | Select-Object -First 1
           }
           $already = Test-Atl
           if ($already) { Write-Host "ATL already present: $($already.FullName)"; exit 0 }
