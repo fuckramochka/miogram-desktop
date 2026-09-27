@@ -38,7 +38,7 @@ using namespace Builder;
 using namespace AyuBuilder;
 
 void BuildMiogramSections(SectionBuilder &builder, AyuSectionBuilder &ayu) {
-	builder.addSubsectionTitle(rpl::single(QString("Miogram")));
+	builder.addSubsectionTitle(rpl::single(QString("Amegram")));
 	ayu.addToggle({
 		.id = u"miogram/player/shuffle"_q,
 		.title = rpl::single(QString("Shuffle")),
@@ -71,7 +71,7 @@ void BuildMiogramSections(SectionBuilder &builder, AyuSectionBuilder &ayu) {
 	});
 	ayu.addToggle({
 		.id = u"miogram/system/animations"_q,
-		.title = rpl::single(QString("Miogram animations")),
+		.title = rpl::single(QString("Amegram animations")),
 		.getter = [] { return Miogram::PerformanceOptimizer::instance().animationsEnabled(); },
 		.setter = [](bool v) { Miogram::PerformanceOptimizer::instance().setAnimationsEnabled(v); },
 	});

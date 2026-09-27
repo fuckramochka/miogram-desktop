@@ -37,7 +37,7 @@ void MiogramUpdater::initialize() {
 }
 
 QString MiogramUpdater::latestReleaseApi() {
-	return u"https://api.github.com/repos/fuckramochka/miogram/releases/latest"_q;
+	return u"https://api.github.com/repos/fuckramochka/amegram/releases/latest"_q;
 }
 
 qint64 MiogramUpdater::checkIntervalMs() {
@@ -88,7 +88,7 @@ void MiogramUpdater::fetchLatestRelease(Fn<void(UpdateInfo)> callback) {
 	req.setRawHeader("Accept", "application/vnd.github.v3+json");
 	req.setRawHeader(
 		"User-Agent",
-		"Miogram-Desktop/7.0.9 (https://github.com/fuckramochka/miogram-desktop)");
+		"Amegram-Desktop/7.0.9 (https://github.com/fuckramochka/amegram)");
 	QNetworkReply *reply = nam->get(req);
 	QObject::connect(reply, &QNetworkReply::finished, [callback, nam, reply] {
 		reply->deleteLater();
@@ -224,7 +224,7 @@ void DownloadManager::download(
 		}
 		const auto dir = QStandardPaths::writableLocation(QStandardPaths::DownloadLocation);
 		QDir().mkpath(dir);
-		const auto path = dir + u"/miogram-update.bin"_q;
+		const auto path = dir + u"/amegram-update.bin"_q;
 		QFile f(path);
 		if (!f.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
 			if (callback) {

@@ -204,7 +204,7 @@ bool update() {
 					writeLog(L"Error: bad update, has Updater.exe! '" + tofname + L"' equal '" + updaterName + L"'");
 					delFolder();
 					return false;
-				} else if ((equal(tofname, updateTo + L"Miogram.exe") || equal(tofname, updateTo + L"AyuGram.exe")) && exeName != L"Miogram.exe") {
+				} else if ((equal(tofname, updateTo + L"Amegram.exe") || equal(tofname, updateTo + L"Miogram.exe") || equal(tofname, updateTo + L"AyuGram.exe") || equal(tofname, updateTo + L"Telegram.exe")) && exeName != L"Amegram.exe") {
 					wstring fullBinaryPath = updateTo + exeName;
 					writeLog(L"Target binary found: '" + tofname + L"', changing to '" + fullBinaryPath + L"'");
 					tofname = fullBinaryPath;
@@ -377,14 +377,14 @@ int APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prevInstance, LPWSTR cmdPara
 				exeName = args[i];
 				for (int j = 0, l = exeName.size(); j < l; ++j) {
 					if (exeName[j] == L'/' || exeName[j] == L'\\') {
-						exeName = L"Miogram.exe";
+						exeName = L"Amegram.exe";
 						break;
 					}
 				}
 			}
 		}
 		if (exeName.empty()) {
-			exeName = L"Miogram.exe";
+			exeName = L"Amegram.exe";
 		}
 		if (needupdate) writeLog(L"Need to update!");
 		if (autostart) writeLog(L"From autostart!");

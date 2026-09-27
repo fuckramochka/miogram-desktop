@@ -194,7 +194,7 @@ void ExtendedLyricsSources::fetchFromYouTube(
 	query.addQueryItem(u"search_query"_q, (artist + u" "_q + title + u" lyrics"_q).trimmed());
 	url.setQuery(query);
 	QNetworkRequest req(url);
-	req.setRawHeader("User-Agent", "Miogram-Desktop/7.0.9");
+	req.setRawHeader("User-Agent", "Amegram-Desktop/7.0.9");
 	QNetworkReply *reply = nam->get(req);
 	QObject::connect(reply, &QNetworkReply::finished, [title, artist, callback, nam, reply] {
 		reply->deleteLater();

@@ -233,7 +233,7 @@ void LyricsEngine::fetchFromLrclib(
 	url.setQuery(query);
 
 	QNetworkRequest req(url);
-	req.setRawHeader("User-Agent", "Miogram-Desktop/7.0.9 (https://github.com/fuckramochka/miogram-desktop)");
+	req.setRawHeader("User-Agent", "Amegram-Desktop/7.0.9 (https://github.com/fuckramochka/amegram)");
 
 	QNetworkReply *reply = nam->get(req);
 	QObject::connect(reply, &QNetworkReply::finished, [title, artist, callback, nam, reply] {

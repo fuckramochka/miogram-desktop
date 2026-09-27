@@ -1,4 +1,4 @@
-name: Build Native Miogram Desktop
+name: Build Native Amegram Desktop
 
 on:
   push:
@@ -147,25 +147,25 @@ jobs:
         run: |
           $ErrorActionPreference = 'Stop'
           $out = "$env:TBUILD/miogram-desktop/out/Release"
-          $pkg = "$env:TBUILD/miogram-desktop/package/miogram"
+          $pkg = "$env:TBUILD/miogram-desktop/package/amegram"
           New-Item -ItemType Directory -Force -Path $pkg | Out-Null
           $exe = $null
-          foreach ($cand in @("$out/AyuGram.exe", "$out/Telegram.exe", "$out/Miogram.exe")) {
+          foreach ($cand in @("$out/Amegram.exe", "$out/AyuGram.exe", "$out/Telegram.exe", "$out/Miogram.exe")) {
             if (Test-Path -LiteralPath $cand) { $exe = $cand; break }
           }
           if (-not $exe) { Get-ChildItem -Path "$env:TBUILD/miogram-desktop/out" -Recurse -Filter *.exe | Select-Object FullName; throw "No built exe found in out/" }
-          Copy-Item -LiteralPath $exe -Destination (Join-Path $pkg "Miogram.exe") -Force
+          Copy-Item -LiteralPath $exe -Destination (Join-Path $pkg "Amegram.exe") -Force
           $updater = Join-Path $out "Updater.exe"
           if (Test-Path -LiteralPath $updater) { Copy-Item -LiteralPath $updater -Destination (Join-Path $pkg "Updater.exe") -Force }
-          $zip = "$env:TBUILD/miogram-desktop/package/miogram-desktop-windows-x64.zip"
+          $zip = "$env:TBUILD/miogram-desktop/package/amegram-desktop-windows-x64.zip"
           if (Test-Path -LiteralPath $zip) { Remove-Item -LiteralPath $zip -Force }
           Compress-Archive -Path (Join-Path $pkg "*") -DestinationPath $zip -Force
 
       - name: Upload Windows Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: miogram-desktop-windows-x64
-          path: TBuild/miogram-desktop/package/miogram-desktop-windows-x64.zip
+          name: amegram-desktop-windows-x64
+          path: TBuild/miogram-desktop/package/amegram-desktop-windows-x64.zip
 
   release:
     name: Publish Release Artifacts
@@ -182,7 +182,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: artifacts/**/*
-          name: Miogram Desktop ${{ github.ref_name }}
+          name: Amegram Desktop ${{ github.ref_name }}
           draft: false
           prerelease: false
         env:

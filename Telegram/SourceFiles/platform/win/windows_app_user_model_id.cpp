@@ -345,10 +345,14 @@ bool checkInstalled(QString path = {}) {
 		}
 	}
 
-	const auto installed = u"AyuGram Desktop/AyuGram.lnk"_q;
-	const auto old = u"AyuGram for Windows/AyuGram.lnk"_q;
+	const auto installed = u"Amegram Desktop/Amegram.lnk"_q;
+	const auto oldMiogram = u"Miogram Desktop/Miogram.lnk"_q;
+	const auto oldAyu = u"AyuGram Desktop/AyuGram.lnk"_q;
+	const auto oldWin = u"AyuGram for Windows/AyuGram.lnk"_q;
 	return validateShortcutAt(path + installed)
-		|| validateShortcutAt(path + old);
+		|| validateShortcutAt(path + oldMiogram)
+		|| validateShortcutAt(path + oldAyu)
+		|| validateShortcutAt(path + oldWin);
 }
 
 bool ValidateShortcut() {
@@ -358,7 +362,7 @@ bool ValidateShortcut() {
 	}
 
 	if (cAlphaVersion()) {
-		path += u"AyuGramAlpha.lnk"_q;
+		path += u"AmegramAlpha.lnk"_q;
 		if (validateShortcutAt(path)) {
 			return true;
 		}
@@ -367,7 +371,7 @@ bool ValidateShortcut() {
 			return true;
 		}
 
-		path += u"AyuGram.lnk"_q;
+		path += u"Amegram.lnk"_q;
 		if (validateShortcutAt(path)) {
 			return true;
 		}

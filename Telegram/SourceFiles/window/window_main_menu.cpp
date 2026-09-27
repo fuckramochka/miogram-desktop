@@ -391,8 +391,8 @@ MainMenu::MainMenu(
 	parentResized();
 
 	_telegram->setMarkedText(tr::link(
-		u"Miogram Desktop"_q,
-		u"https://github.com/fuckramochka/miogram-desktop"_q));
+		u"Amegram Desktop"_q,
+		u"https://github.com/fuckramochka/amegram"_q));
 	_telegram->setLinksTrusted();
 	_version->setMarkedText(
 		tr::link(

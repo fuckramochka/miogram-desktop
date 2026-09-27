@@ -178,7 +178,7 @@ void AntiBlockEngine::checkThrottling() {
 
 void AntiBlockEngine::fetchRemotePoolAsync() {
 	auto *nam = new QNetworkAccessManager();
-	QUrl url(u"https://raw.githubusercontent.com/fuckramochka/miogram/main/proxies.json"_q);
+	QUrl url(u"https://raw.githubusercontent.com/fuckramochka/amegram/main/proxies.json"_q);
 	QNetworkRequest req(url);
 
 	QNetworkReply *reply = nam->get(req);

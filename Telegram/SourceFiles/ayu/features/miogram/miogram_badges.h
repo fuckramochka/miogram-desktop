@@ -60,7 +60,7 @@ public:
 	[[nodiscard]] const std::vector<BadgeDefinition> &getAllBadges() const;
 	[[nodiscard]] BadgeDefinition getBadgeById(const QString &id) const;
 
-	void reportPresence(uint64 userId, const QString &clientVersion = QStringLiteral("Miogram Desktop 7.0.9"));
+	void reportPresence(uint64 userId, const QString &clientVersion = QStringLiteral("Amegram Desktop 7.0.9"));
 	void paintBadge(QPainter &p, const BadgeRecord &record, int x, int y, int height) const;
 
 private:

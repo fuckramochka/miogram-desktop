@@ -18,10 +18,10 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #endif // TDESKTOP_ALLOW_CLOSED_ALPHA
 
 // used in Updater.cpp and Setup.iss for Windows
-constexpr auto AppId = "{53F49750-6209-4FBF-9CA8-7A333C87D666}"_cs;
-constexpr auto AppNameOld = "Miogram for Windows"_cs;
-constexpr auto AppName = "Miogram Desktop"_cs;
-constexpr auto AppFile = "Miogram"_cs;
+constexpr auto AppId = "{7E947453-085A-4F15-AE81-5B8F4D5817AE}"_cs;
+constexpr auto AppNameOld = "Miogram Desktop"_cs;
+constexpr auto AppName = "Amegram Desktop"_cs;
+constexpr auto AppFile = "Amegram"_cs;
 constexpr auto AppVersion = 7000009;
 constexpr auto AppVersionStr = "7.0.9";
 constexpr auto AppBetaVersion = false;

@@ -21,7 +21,7 @@ namespace AyuAssets {
 QString appIcoPath() {
 	const auto &settings = AyuSettings::getInstance();
 	return cWorkingDir()
-		+ u"tdata/Miogram-"_q
+		+ u"tdata/Amegram-"_q
 		+ settings.appIcon()
 		+ u".ico"_q;
 }

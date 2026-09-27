@@ -19,7 +19,7 @@ std::vector<SupabaseColumn> SupabaseSchema::badgeColumns() {
 		{ u"obtained_reason"_q, u"text"_q, u"''"_q },
 		{ u"obtained_at"_q, u"timestamptz"_q, u"now()"_q },
 		{ u"is_active"_q, u"boolean"_q, u"true"_q },
-		{ u"client_version"_q, u"text"_q, u"'Miogram Desktop'"_q },
+		{ u"client_version"_q, u"text"_q, u"'Amegram Desktop'"_q },
 		{ u"created_at"_q, u"timestamptz"_q, u"now()"_q },
 		{ u"updated_at"_q, u"timestamptz"_q, u"now()"_q },
 	};

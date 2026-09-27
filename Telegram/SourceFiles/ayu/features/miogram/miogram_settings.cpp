@@ -51,9 +51,9 @@ void MiogramSettingsModel::initialize() {
 	_sections = {
 		{
 			.id = u"miogram/player"_q,
-			.titleUk = u"Плеєр Miogram"_q,
-			.titleRu = u"Плеер Miogram"_q,
-			.titleEn = u"Miogram Player"_q,
+			.titleUk = u"Плеєр Amegram"_q,
+			.titleRu = u"Плеер Amegram"_q,
+			.titleEn = u"Amegram Player"_q,
 			.controlIds = {
 				u"miogram/player/shuffle"_q,
 				u"miogram/player/repeat"_q,
