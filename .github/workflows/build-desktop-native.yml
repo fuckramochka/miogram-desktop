@@ -75,12 +75,18 @@ jobs:
             if (-not $logs) { Write-Host 'No dd_*.log found in TEMP' }
           }
           function Invoke-VsModify($exe, $ids) {
-            # NOTE: VS18 setup.exe no longer accepts --wait (exit 87);
-            # Start-Process -Wait already blocks until modify finishes.
-            $argList = @('modify', '--installPath', $vsPath, '--quiet', '--norestart')
-            foreach ($id in $ids) { $argList += '--add'; $argList += $id }
-            Write-Host "Running: $exe $($argList -join ' ')"
-            $p = Start-Process -FilePath $exe -ArgumentList $argList -Wait -PassThru
+            # NOTE: VS18 setup.exe no longer accepts --wait (exit 87).
+            # NOTE: Start-Process -ArgumentList mangles quoting of paths
+            # with spaces, so pass a verbatim command line via ProcessStartInfo.
+            $argString = 'modify --installPath "' + $vsPath + '" --quiet --norestart'
+            foreach ($id in $ids) { $argString += ' --add "' + $id + '"' }
+            Write-Host "Running: $exe $argString"
+            $psi = New-Object System.Diagnostics.ProcessStartInfo
+            $psi.FileName = $exe
+            $psi.Arguments = $argString
+            $psi.UseShellExecute = $false
+            $p = [System.Diagnostics.Process]::Start($psi)
+            $p.WaitForExit()
             Write-Host "exit code: $($p.ExitCode)"
             return $p.ExitCode
           }
